@@ -3,8 +3,8 @@
 
 BOX_BASE =  'ubuntu/yakkety64'.freeze
 
-SWIFT_PATH = 'https://swift.org/builds/swift-3.1-branch/ubuntu1610/swift-3.1-DEVELOPMENT-SNAPSHOT-2017-03-07-a'.freeze
-SWIFT_DIRECTORY = 'swift-3.1-DEVELOPMENT-SNAPSHOT-2017-03-07-a-ubuntu16.10'.freeze
+SWIFT_PATH = 'https://swift.org/builds/swift-3.1-release/ubuntu1610/swift-3.1-RELEASE'.freeze
+SWIFT_DIRECTORY = 'swift-3.1-RELEASE-ubuntu16.10'.freeze
 SWIFT_FILE = "#{SWIFT_DIRECTORY}.tar.gz".freeze
 SWIFT_HOME = "/home/vagrant/#{SWIFT_DIRECTORY}".freeze
 
@@ -44,6 +44,26 @@ Vagrant.configure(2) do |config|
   # 5. Perfect.org packages
     sudo apt-get --assume-yes install openssl libssl-dev uuid-dev
     sudo apt-get --assume-yes install expect
+  # 8. Docker - instructions from https://docs.docker.com/engine/installation/linux/ubuntulinux/
+      sudo apt-get --assume-yes install apt-transport-https ca-certificates
+      sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+      sudo sh -c "umask 022; echo 'deb https://apt.dockerproject.org/repo ubuntu-wily main' > /etc/apt/sources.list.d/docker.list"
+      sudo apt-get --assume-yes update
+      sudo apt-get --assume-yes install linux-image-extra-$(uname -r) linux-image-extra-virtual
+      sudo apt-get --assume-yes install docker-engine
+      sudo groupadd docker
+      sudo usermod -aG docker ubuntu
+      sudo service docker start
+      sudo docker pull jinmingjian/docker-sourcekite
+      
+      curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+      sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+      # Install repo
+      sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+      # Update apt-get
+      sudo apt-get --assume-yes update
+      # Install
+      sudo apt-get --assume-yes install code
 
   ### Download Swift binary if not found, install it, and add it to the path
       if [ ! -f "#{SWIFT_FILE}" ]; then
@@ -52,7 +72,14 @@ Vagrant.configure(2) do |config|
       sudo tar -xzf #{SWIFT_FILE} --directory / --strip-components=1
       sudo find /usr/lib/swift -type d -print0 | sudo xargs -0 chmod a+rx
       sudo find /usr/lib/swift -type f -print0 | sudo xargs -0 chmod a+r
-
+      
+  ### Add Libraries for XWindows
+      sudo apt-get --assume-yes install libgtk2.0 libgconf-2-4 libasound2
+      
+  ### Setup for VSCode
+      git clone https://github.com/felix91gr/swift-linuxSetup.git
+      
+  ### Add SSL Stuff
   	  sudo sh -c "echo '10.0.0.11       ssldemo.linuxswift.com' >> /etc/hosts"
       
       sudo curl https://letsencrypt.org/certs/isrgrootx1.pem.txt -o /usr/local/share/ca-certificates/isrgrootx1.crt
@@ -112,7 +139,27 @@ Vagrant.configure(2) do |config|
   # 5. Perfect.org packages
       sudo apt-get --assume-yes install openssl libssl-dev uuid-dev
       sudo apt-get --assume-yes install expect
-
+  # 8. Docker - instructions from https://docs.docker.com/engine/installation/linux/ubuntulinux/
+      sudo apt-get --assume-yes install apt-transport-https ca-certificates
+      sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+      sudo sh -c "umask 022; echo 'deb https://apt.dockerproject.org/repo ubuntu-wily main' > /etc/apt/sources.list.d/docker.list"
+      sudo apt-get --assume-yes update
+      sudo apt-get --assume-yes install linux-image-extra-$(uname -r) linux-image-extra-virtual
+      sudo apt-get --assume-yes install docker-engine
+      sudo groupadd docker
+      sudo usermod -aG docker ubuntu
+      sudo service docker start
+      sudo docker pull jinmingjian/docker-sourcekite
+      
+      curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+      sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+      # Install repo
+      sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+      # Update apt-get
+      sudo apt-get --assume-yes update
+      # Install
+      sudo apt-get --assume-yes install code
+      
   ### Download Swift binary if not found, install it, and add it to the path
       if [ ! -f "#{SWIFT_FILE}" ]; then
           curl -O "#{SWIFT_PATH}/#{SWIFT_FILE}"
@@ -120,7 +167,14 @@ Vagrant.configure(2) do |config|
       sudo tar -xzf #{SWIFT_FILE} --directory / --strip-components=1
       sudo find /usr/lib/swift -type d -print0 | sudo xargs -0 chmod a+rx
       sudo find /usr/lib/swift -type f -print0 | sudo xargs -0 chmod a+r
-	  
+      
+  ### Add Libraries for XWindows
+      sudo apt-get --assume-yes install libgtk2.0 libgconf-2-4 libasound2
+  
+  ### Setup for VSCode
+      git clone https://github.com/felix91gr/swift-linuxSetup.git
+  
+  ### Add SSL Stuff
 	  sudo sh -c "echo '10.0.0.10       ssldemo.linuxswift.com' >> /etc/hosts"
     
     sudo curl https://letsencrypt.org/certs/isrgrootx1.pem.txt -o /usr/local/share/ca-certificates/isrgrootx1.crt
